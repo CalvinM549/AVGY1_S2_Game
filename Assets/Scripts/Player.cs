@@ -115,18 +115,19 @@ public class Player : MonoBehaviour
         {
             if (!(collider.CompareTag("Player"))&& !(collider.CompareTag("Wall")))
             {
+                Debug.Log(Vector2.Angle(transform.position, collider.transform.position));
+                Debug.Log(Vector2.Angle(transform.position, mouseVector) + meleeAngle);
                 //if ((Vector2.Angle(transform.position, collider.transform.position) - Vector2.Angle(transform.position, mouseVector) < mouseVector + meleeAngle))
-                if(Vector2.Angle(transform.position, collider.transform.position) > Vector2.Angle(transform.position, mouseVector) + meleeAngle
-                    && Vector2.Angle(transform.position, collider.transform.position) < Vector2.Angle(transform.position, mouseVector) - meleeAngle)
+                if (Vector2.Angle(mouseVector, (collider.transform.position - transform.position)) <= meleeAngle)
                 {
-                    Debug.Log(Vector2.Angle(transform.position, collider.transform.position));
-                    Debug.Log(Vector2.Angle(transform.position, mouseVector) + meleeAngle);
 
                     Debug.DrawLine(transform.position, collider.transform.position, Color.red, 2, false);
                     if (collider.CompareTag("SimpleEnemy"))
                     {
                         collider.GetComponent<SimpleEnemy>().TakeDamage(meleeDamage);
-
+                        collider.GetComponent<SimpleEnemy>().KnockBack(collider.GetComponent<Transform>().position - transform.position, meleeKnockback);
+                        collider.GetComponent<SimpleEnemy>().TakeDamage(meleeDamage);
+                        collider.GetComponent<SimpleEnemy>().TakeDamage(meleeDamage);
                         playerAmmo++;
 
                         Debug.Log("Enemy Hit");
@@ -134,7 +135,6 @@ public class Player : MonoBehaviour
                     else if (collider.CompareTag("BossEnemy"))
                     {
                         collider.GetComponent<BossEnemy>().TakeDamage(meleeDamage);
-
                         playerAmmo++;
 
                         Debug.Log("Enemy Hit");

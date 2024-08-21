@@ -16,6 +16,11 @@ public class PlayerMelee : MonoBehaviour
         
     }
 
+    void setVariables()
+    {
+
+    }
+
     private void OnTriggerEnter2D(Collider2D collision)
     {
         
