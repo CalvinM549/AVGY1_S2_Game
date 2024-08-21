@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
@@ -26,9 +27,10 @@ public class Player : MonoBehaviour
 
     // Melee Attack
     public int meleeDamage;
+    public int meleeReach;
+    public int meleeAngle;
     public int meleeKnockback;
     public float meleeStunDur;
-    public GameObject meleeHitbox;
 
     public Vector3 towardsMouseFromPlayer;
 
@@ -105,12 +107,51 @@ public class Player : MonoBehaviour
 
     public void PlayerMeleeAttack()
     {
-        meleeHitbox.SetActive(true);
+        Vector3 mouseVector = PlayerToMouse();
+        Collider2D[] hitColliders = Physics2D.OverlapCircleAll(transform.position, meleeReach);
+        Debug.DrawRay(transform.position, mouseVector, Color.green, 2, false);
+        
+        foreach (Collider2D collider in hitColliders)
+        {
+            if (!(collider.CompareTag("Player"))&& !(collider.CompareTag("Wall")))
+            {
+                //if ((Vector2.Angle(transform.position, collider.transform.position) - Vector2.Angle(transform.position, mouseVector) < mouseVector + meleeAngle))
+                if(Vector2.Angle(transform.position, collider.transform.position) > Vector2.Angle(transform.position, mouseVector) + meleeAngle
+                    && Vector2.Angle(transform.position, collider.transform.position) < Vector2.Angle(transform.position, mouseVector) - meleeAngle)
+                {
+                    Debug.Log(Vector2.Angle(transform.position, collider.transform.position));
+                    Debug.Log(Vector2.Angle(transform.position, mouseVector) + meleeAngle);
+
+                    Debug.DrawLine(transform.position, collider.transform.position, Color.red, 2, false);
+                    if (collider.CompareTag("SimpleEnemy"))
+                    {
+                        collider.GetComponent<SimpleEnemy>().TakeDamage(meleeDamage);
+
+                        playerAmmo++;
+
+                        Debug.Log("Enemy Hit");
+                    }
+                    else if (collider.CompareTag("BossEnemy"))
+                    {
+                        collider.GetComponent<BossEnemy>().TakeDamage(meleeDamage);
+
+                        playerAmmo++;
+
+                        Debug.Log("Enemy Hit");
+                    }
+
+                }
+
+                Debug.Log("Enemy Targeted");
+            }
+            
+        }
+
         //meleeHitbox.GetComponent<PolygonCollider2D>().OnTriggerEnter(Collider collision)
         //{
 
         //}
-       
+
         // deal damage to enemies
         // knock back enemies
         // stun enemies
@@ -118,16 +159,19 @@ public class Player : MonoBehaviour
         //collision.TakeDamage(meleeDamage);
         //collision.KnockBack(collision.GetComponenet<Transform>().position - transform.position, meleeKnockback);
         //collision.Stun(meleeStunDur);
-        meleeHitbox.SetActive(false);
+        
 
-        playerAmmo++;
     }
 
     public void PlayerRangedAttack()
-    {       
-        GameObject projectile = Instantiate(simpleProjectile, transform.position, transform.rotation);
+    {
+        Vector3 mouseVector = PlayerToMouse();
+
+        float rot = Mathf.Atan2(mouseVector.y, mouseVector.x) * Mathf.Rad2Deg;
+
+        GameObject projectile = Instantiate(simpleProjectile, transform.position, Quaternion.Euler(0, 0, rot + -90));
             // spawns projectile on player's location
-        projectile.GetComponent<SimpleProjectile>().SetInfo(PlayerToMouse(), projectileSpeed, projectileDamage);
+        projectile.GetComponent<SimpleProjectile>().SetInfo(mouseVector, projectileSpeed, projectileDamage);
             // feeds projectile its stats from the player's variables to allow for easier tweaking
         playerAmmo--;
             // reduces ammo count
