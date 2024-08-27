@@ -20,7 +20,7 @@ public class Tesxt : MonoBehaviour
         {
             if (enemy != null)
             {
-                enemy.GetComponent<IDamagable>().TakeDamage();
+                enemy.GetComponent<IDamageable>().TakeDamage();
             }
         }
     }

@@ -38,13 +38,11 @@ public class SimpleEnemy : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-
-        
         //cooldowns
         
     }
 
-
+    
 
 
     private void FixedUpdate()
@@ -101,6 +99,5 @@ public class SimpleEnemy : MonoBehaviour
     {
         //player.TakeDamage(EnemyDamage);
     }
-
 
 }

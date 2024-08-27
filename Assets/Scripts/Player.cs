@@ -16,7 +16,7 @@ public class Player : MonoBehaviour
 
     //Health Variables
     public int playerCurrentHealth;
-    public int PlayerMaxHealth;
+    public int playerMaxHealth;
 
 
     //Attack Variables
@@ -31,13 +31,16 @@ public class Player : MonoBehaviour
     public int meleeAngle;
     public int meleeKnockback;
     public float meleeStunDur;
+    public float meleeAttackSpd;
+    public float canMelee;
 
     public Vector3 towardsMouseFromPlayer;
 
     //Movement Variables
     public int dashDistance;
+    public float dashCooldown;
+    public float canDash;
     public int playerSpeed;
-    public int dashCooldown;
     float vertical;
     float horizontal;
 
@@ -50,7 +53,7 @@ public class Player : MonoBehaviour
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
-        playerCurrentHealth = PlayerMaxHealth;
+        playerCurrentHealth = playerMaxHealth;
     }
 
 
@@ -59,14 +62,27 @@ public class Player : MonoBehaviour
     {
         vertical = Input.GetAxis("Vertical");
         horizontal = Input.GetAxis("Horizontal");
-        if (Input.GetKeyDown("space"))
+        if (Input.GetKeyDown("space") && dashCooldown <= canDash)
         {
             PlayerDash();
+            canDash = 0f;
         }
-        if (Input.GetMouseButtonDown(0)) //left click
+        else if (canDash <= dashCooldown)
         {
-            PlayerMeleeAttack();
+            canDash += Time.deltaTime;
         }
+
+        if (Input.GetMouseButtonDown(0) && meleeAttackSpd <= canMelee) //left click
+        {
+
+            PlayerMeleeAttack();
+            canMelee = 0f;
+        }
+        else if(canMelee <= meleeAttackSpd)
+        {
+            canMelee += Time.deltaTime;
+        }
+
         if (Input.GetMouseButtonDown(1) && playerAmmo > 0) //right click
         {
             PlayerRangedAttack();
@@ -122,12 +138,14 @@ public class Player : MonoBehaviour
                 {
 
                     Debug.DrawLine(transform.position, collider.transform.position, Color.red, 2, false);
+                    
+                    //collider.GetComponent<IDamageable>().TakeDamage();
+
                     if (collider.CompareTag("SimpleEnemy"))
                     {
                         collider.GetComponent<SimpleEnemy>().TakeDamage(meleeDamage);
                         collider.GetComponent<SimpleEnemy>().KnockBack(collider.GetComponent<Transform>().position - transform.position, meleeKnockback);
-                        collider.GetComponent<SimpleEnemy>().TakeDamage(meleeDamage);
-                        collider.GetComponent<SimpleEnemy>().TakeDamage(meleeDamage);
+                        collider.GetComponent<SimpleEnemy>().Stun(meleeStunDur);
                         playerAmmo++;
 
                         Debug.Log("Enemy Hit");

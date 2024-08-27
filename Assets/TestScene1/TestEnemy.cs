@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Transactions;
 using UnityEngine;
 
-public class TestEnemy : MonoBehaviour, IDamagable
+public class TestEnemy : MonoBehaviour, IDamageable
 {
     public int hp;
 
