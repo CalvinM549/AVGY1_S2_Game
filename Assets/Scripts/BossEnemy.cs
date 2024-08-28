@@ -16,6 +16,8 @@ public class BossEnemy : MonoBehaviour
     public int bossCurrentHealth;
     public int bossMaxHealth;
 
+    public float bossAttackDelay;
+
     public float damageAreaDelay;
     private Collider2D[] hitColliders;
 
@@ -35,6 +37,7 @@ public class BossEnemy : MonoBehaviour
         player = playerTransform.GetComponent<Player>();
 
         bossCurrentHealth = bossMaxHealth;
+        StartCoroutine(ChooseAttack());
     }
 
     // Update is called once per frame
@@ -48,6 +51,11 @@ public class BossEnemy : MonoBehaviour
         {
             HomingProjectile();
         }
+
+        //while(secondPhase)
+        //{
+        //   Invoke("CircleAOE", 1f);
+        //}
     }
 
     public void TakeDamage(int damageTaken)
@@ -69,9 +77,30 @@ public class BossEnemy : MonoBehaviour
         Destroy(gameObject);
     }
 
-    void ChooseAttack()
+    IEnumerator ChooseAttack()
     {
+        Debug.Log("start");
+        while (true)
+        {
+            yield return new WaitForSeconds(bossAttackDelay);
+            int test = Random.Range(0, 3);
+            switch (test)
+            {
+                case 0:
+                    Debug.Log("1");
+                    CircleAOE();
+                    break;
 
+                case 1:
+                    Debug.Log("2");
+                    HomingProjectile();
+                    break;
+                case 2:
+                    Debug.Log("3");
+                    break;
+            }
+            yield return null;
+        }
     }
 
     IEnumerator AOEDamagePlayer(string areaType, int damage)
@@ -97,12 +126,13 @@ public class BossEnemy : MonoBehaviour
 
     public void CircleAOE()
     {
-        circleAreaPosition = playerTransform.position;
+        circleAreaPosition = playerTransform.position; // gets players current position
+        //draws a warning circle at player's current position
         GameObject warning = Instantiate(testWarningCircle, circleAreaPosition, transform.rotation);
-        warning.transform.localScale = new Vector3(circleAreaSize*2, circleAreaSize*2, 0);
-        Destroy(warning, damageAreaDelay);
-        //draw warning circle        
-        Debug.Log(circleAreaPosition);
+        warning.GetComponent<ExplosionAnimation>().SetValues(new Vector3(circleAreaSize * 2, circleAreaSize * 2, 0), damageAreaDelay);
+        //warning.transform.localScale = new Vector3(circleAreaSize*2, circleAreaSize*2, 0);
+        //Destroy(warning, damageAreaDelay); // removes the warning circle when the damage occurs
+        // calls the damage script, with a set delay
         StartCoroutine(AOEDamagePlayer("Circle", circleAreaDamage));
 
     }
@@ -139,4 +169,5 @@ public class BossEnemy : MonoBehaviour
 
     //Movement
     //Teleport to different area in arena
+
 }

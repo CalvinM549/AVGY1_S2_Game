@@ -11,18 +11,21 @@ public class UIManager : MonoBehaviour
     public TextMeshProUGUI ammoText;
 
     public UnityEngine.UI.Image healthBar;
+    public UnityEngine.UI.Image bossHealthBar;
 
     public GameManager gameManager;
 
     public Player playerScript;
+    public BossEnemy bossScript;
     public float playerUIHealth;
+    public float bossUIHealth;
 
 
     // Start is called before the first frame update
     void Start()
     {
         playerUIHealth = playerScript.playerCurrentHealth;
-
+        bossUIHealth = bossScript.bossCurrentHealth;
     }
 
 
@@ -43,10 +46,15 @@ public class UIManager : MonoBehaviour
             playerUIHealth = playerScript.playerCurrentHealth;
             healthBar.fillAmount =  (float)(playerUIHealth / (float)playerScript.playerMaxHealth);
             Debug.Log((float)(playerUIHealth / playerScript.playerMaxHealth));
-
-
         }
-    
+
+        if (bossScript.bossCurrentHealth != bossUIHealth)
+        {
+            bossUIHealth = bossScript.bossCurrentHealth;
+            bossHealthBar.fillAmount = (float)(bossUIHealth / (float)bossScript.bossMaxHealth);
+            Debug.Log((float)(bossUIHealth / bossScript.bossMaxHealth));
+        }
+
     }
 
     

@@ -31,8 +31,10 @@ public class DamageTrap : MonoBehaviour
         GameObject warning = Instantiate(testWarningCircle, transform.position, transform.rotation);
         warning.transform.localScale = new Vector3(areaSize * 2, areaSize * 2, 0);
         Destroy(warning, delay); // removes warning circle after damage occurs
-        Destroy(gameObject, delay); // removes self after damage occurs
+
         StartCoroutine(DamagePlayer());
+       // Destroy(gameObject, delay); // removes self after damage occurs
+        Debug.Log("4");
     }
 
 
@@ -40,9 +42,8 @@ public class DamageTrap : MonoBehaviour
     {
         yield return new WaitForSeconds(delay);
 
-
         hitColliders = Physics2D.OverlapCircleAll(transform.position, areaSize);
-
+        
         foreach (Collider2D collider in hitColliders)
         {
             if (collider.CompareTag("Player"))
@@ -50,5 +51,7 @@ public class DamageTrap : MonoBehaviour
                 collider.gameObject.GetComponent<Player>().TakeDamage(damage);
             }
         }
+
+        Destroy(gameObject);
     }
 }

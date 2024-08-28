@@ -10,6 +10,11 @@ public class GameManager : MonoBehaviour
     public float timeRemaining;
     public bool timerIsRunning;
     public Player playerScript;
+    public bool key1;
+    public bool key2;
+    public bool key3;
+
+
     // Start is called before the first frame update
     void Start()
     {
