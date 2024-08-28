@@ -1,11 +1,14 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using static UnityEngine.RuleTile.TilingRuleOutput;
 
 public class BossEnemy : MonoBehaviour
 {
     //Test Variables
     public int AOETest = 0;
+    public GameObject testWarningCircle;
+
 
     //Boss Values
     public bool secondPhase;
@@ -13,6 +16,8 @@ public class BossEnemy : MonoBehaviour
     public int bossCurrentHealth;
     public int bossMaxHealth;
 
+    public float damageAreaDelay;
+    private Collider2D[] hitColliders;
 
     private Vector3 circleAreaPosition;
     public int circleAreaSize;
@@ -20,7 +25,7 @@ public class BossEnemy : MonoBehaviour
 
     //Imported Values
     Player player;
-    public Transform playerTransform;
+    public UnityEngine.Transform playerTransform;
     public GameObject homingProjectile;
 
 
@@ -69,21 +74,36 @@ public class BossEnemy : MonoBehaviour
 
     }
 
-    public void CircleAOE()
+    IEnumerator AOEDamagePlayer(string areaType, int damage)
     {
-        circleAreaPosition = playerTransform.position;
-        //draw warning circle
-        //delay
+        yield return new WaitForSeconds(damageAreaDelay);
+        
 
-        Collider2D[] hitColliders = Physics2D.OverlapCircleAll(circleAreaPosition, circleAreaSize);
-        Debug.Log(circleAreaPosition);
-        foreach (Collider2D collider in hitColliders) 
+        if (areaType == "Circle")
+        {
+            hitColliders = Physics2D.OverlapCircleAll(circleAreaPosition, circleAreaSize);
+
+        }
+        
+
+        foreach (Collider2D collider in hitColliders)
         {
             if (collider.CompareTag("Player"))
             {
-                collider.gameObject.GetComponent<Player>().TakeDamage(circleAreaDamage);
+                collider.gameObject.GetComponent<Player>().TakeDamage(damage);
             }
         }
+    }
+
+    public void CircleAOE()
+    {
+        circleAreaPosition = playerTransform.position;
+        GameObject warning = Instantiate(testWarningCircle, circleAreaPosition, transform.rotation);
+        warning.transform.localScale = new Vector3(circleAreaSize*2, circleAreaSize*2, 0);
+        Destroy(warning, damageAreaDelay);
+        //draw warning circle        
+        Debug.Log(circleAreaPosition);
+        StartCoroutine(AOEDamagePlayer("Circle", circleAreaDamage));
 
     }
 

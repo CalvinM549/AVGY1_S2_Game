@@ -146,16 +146,15 @@ public class Player : MonoBehaviour
                         collider.GetComponent<SimpleEnemy>().TakeDamage(meleeDamage);
                         collider.GetComponent<SimpleEnemy>().KnockBack(collider.GetComponent<Transform>().position - transform.position, meleeKnockback);
                         collider.GetComponent<SimpleEnemy>().Stun(meleeStunDur);
-                        playerAmmo++;
-
-                        Debug.Log("Enemy Hit");
                     }
                     else if (collider.CompareTag("BossEnemy"))
                     {
                         collider.GetComponent<BossEnemy>().TakeDamage(meleeDamage);
-                        playerAmmo++;
+                    }
 
-                        Debug.Log("Enemy Hit");
+                    if(playerAmmo < 5)
+                    {
+                        playerAmmo++;
                     }
 
                 }
